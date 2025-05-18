@@ -1,0 +1,2065 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="quearybuilder.SiteMaster" %>
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%: Page.Title %> - My ASP.NET Application</title>
+
+    <asp:PlaceHolder runat="server">
+        <%: Scripts.Render("~/bundles/modernizr") %>
+    </asp:PlaceHolder>
+
+    <webopt:bundlereference runat="server" path="~/Content/css" />
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    
+    <style>
+        .table-item:hover {
+    background: #dee2e6;
+}
+
+.edit-icon {
+    opacity: 0.7;
+}
+
+.edit-icon:hover {
+    opacity: 1;
+}
+
+
+
+.db-item:hover {
+    background: #e9ecef;
+}
+
+.toggle-icon, .download-icon {
+    cursor: pointer;
+}
+
+.nested-list {
+    padding-left: 20px;
+    margin-top: 5px;
+}
+
+.table-item:hover {
+    background: blue;
+}
+
+    </style>
+   
+    
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+  
+</head>
+<body>
+    <form runat="server">
+
+        <asp:ScriptManager runat="server">
+            <Scripts>
+                <%--To learn more about bundling scripts in ScriptManager see https://go.microsoft.com/fwlink/?LinkID=301884 --%>
+                <%--Framework Scripts--%>
+                <asp:ScriptReference Name="MsAjaxBundle" />
+                <asp:ScriptReference Name="jquery" />
+                <asp:ScriptReference Name="WebForms.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebForms.js" />
+                <asp:ScriptReference Name="WebUIValidation.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebUIValidation.js" />
+                <asp:ScriptReference Name="MenuStandards.js" Assembly="System.Web" Path="~/Scripts/WebForms/MenuStandards.js" />
+                <asp:ScriptReference Name="GridView.js" Assembly="System.Web" Path="~/Scripts/WebForms/GridView.js" />
+                <asp:ScriptReference Name="DetailsView.js" Assembly="System.Web" Path="~/Scripts/WebForms/DetailsView.js" />
+                <asp:ScriptReference Name="TreeView.js" Assembly="System.Web" Path="~/Scripts/WebForms/TreeView.js" />
+                <asp:ScriptReference Name="WebParts.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebParts.js" />
+                <asp:ScriptReference Name="Focus.js" Assembly="System.Web" Path="~/Scripts/WebForms/Focus.js" />
+                <asp:ScriptReference Name="WebFormsBundle" />
+                <%--Site Scripts--%>
+            </Scripts>
+        </asp:ScriptManager>
+
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
+            <div class="container">
+                   
+           
+                <a class="navbar-brand" runat="server" href="~/">QUERY BUILDER</a>
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item"><a class="nav-link" runat="server" href="~/">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" runat="server" href="~/About">About</a></li>
+                        <li class="nav-item"><a class="nav-link" runat="server" href="~/Contact">Contact</a></li>
+                    </ul>
+                    <ul class="navbar-nav flex-grow-0">
+                               <li class="nav-item"><a class="nav-link " runat="server" id="login" href="~/login" >login</a></li>
+                         <li class="nav-item"><a class="nav-link " runat="server"  id="signup" href="~/signup">sign up</a></li>
+                       
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="container body-content" style="margin-top:0px">
+             <div class="container" >
+           <div class="row">
+
+          
+             <div class="col-4 bg-dark text-center text-white border border-top-1" style="height:auto">
+                 <h1>Menu</h1>
+                 <div class="border rounded-2 bg-gradient">
+                 <hr />
+                 <asp:Image runat="server" src="/image/database.png"  style="width:30px"/>
+                 <asp:Label runat="server" class="mx-4" ><h4>DATABASE</h4></asp:Label>
+                 <br />
+                 <hr />
+                     </div>
+                 <br />
+                 
+                  <%--database details--%>
+
+                 <asp:ListBox ID="ListBox3" runat="server" DataSourceID="SqlDataSource3" DataTextField="name" DataValueField="name"></asp:ListBox>
+
+<asp:SqlDataSource ID="SqlDataSource3" runat="server" 
+    ConnectionString="<%$ ConnectionStrings:employeeConnectionString2 %>"
+    SelectCommand="SELECT name FROM sys.databases WHERE state_desc = 'ONLINE';">
+</asp:SqlDataSource>
+
+
+                  <ul class="list-unstyled text-center d-none" id="ul3" runat="server">
+
+                   
+
+                 </ul>
+
+
+
+                 <ul id="databaseList">
+    <!-- Databases and tables will be added here dynamically -->
+</ul>
+
+
+                 <asp:TextBox ID="hfDatabaseName" runat="server" class="d-none"/>
+
+<!-- Button to trigger postback (hidden) -->
+                 <%--<asp:Button ID="button20" runat="server" Text="Load Tables" OnClick="btnGetTables_Click" CssClass="d-none" />--%>
+
+
+                 <%--tables of database base on selected table--%>
+                 <asp:TextBox class="form-control-sm" id="textbox10" runat="server" /> <asp:Button ID="Button10" runat="server" Text="Go" class="btn btn-success" OnClick="go"/>
+                 <br />
+                 <asp:ListBox ID="ListBox1" runat="server"  DataSourceID="SqlDataSource1" DataTextField="TABLE_NAME" DataValueField="TABLE_NAME"></asp:ListBox>
+                 <asp:SqlDataSource ID="SqlDataSource1" runat="server" ConnectionString="<%$ ConnectionStrings:employeeConnectionString2 %>" SelectCommand=" SELECT TABLE_NAME 
+FROM INFORMATION_SCHEMA.TABLES 
+WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_CATALOG = '';"></asp:SqlDataSource>
+                 
+
+
+                  <div class="border rounded-2 bg-gradient">
+                  <hr />
+                 
+                 <asp:Label runat="server" class="mx-4" ><h4>TABLE LIST</h4></asp:Label>
+                 <br />
+                 <hr />
+                      </div>
+                 <br />
+
+                 <ul class="list-unstyled " id="ul1" >
+
+
+                 </ul>
+
+
+
+
+                   <asp:TextBox class="form-control-sm" id="textbox11" runat="server" /> <asp:Button ID="Button11" runat="server" Text="Go" class="btn btn-success" OnClick="Column" />
+                  
+                  <div class="border rounded-2 bg-gradient d-none">
+                 <hr />
+                 <h2>QUERY OPTION</h2>
+                 
+                 <hr />
+                      </div>
+
+                 <div class="d-none">
+                     <ul class="list-unstyled text-uppercase text-light">
+                       <%-- <li class="nav-item"><a class="nav-link" runat="server" href="~/select" >select</a></li>
+                         <br />
+                        <li class="nav-item"><a class="nav-link" runat="server" href="~/insert">Insert</a></li>
+                         <br />
+                        <li class="nav-item"><a class="nav-link" runat="server" href="~/update">update</a></li>
+                         <br />
+                          <li class="nav-item"><a class="nav-link" runat="server" href="~/delete">delete</a></li>
+                         <br />
+                        <li class="nav-item"><a class="nav-link" runat="server" href="~/join">join</a></li>
+                         <br />
+                        <li class="nav-item"><a class="nav-link" runat="server" href="~/groupby">group by</a></li>
+                         <br />
+                         <li class="nav-item"><a class="nav-link" runat="server" href="~/orderby">order by</a></li>
+                         <br />
+                           <li class="nav-item"><a class="nav-link" runat="server" href="~/agregration">agregration</a></li>--%>
+                         <br />
+                           <li class="nav-item"><a class="nav-link querylink" runat="server" href="~/createtable.aspx" >Create Table</a></li>
+                       
+                         <br />
+                           <li class="nav-item"><a class="nav-link querylink" runat="server" href="~/crud" >Crud </a></li>
+                         <br />
+                    <%--</ul>--%>
+                    </ul>
+                 </div>
+
+
+
+                  
+                
+                 <div class="text-center d-none">
+                     <div class="border rounded-2 bg-gradient">
+                          <hr />
+                     <h3>
+                         QUERY
+                         <br />
+                         <br />
+                          </h3>
+                         <hr />
+                         </div>
+                     <br />
+                     <br />
+                         <asp:ListBox ID="ListBox2" runat="server" AutoPostBack="True" DataSourceID="SqlDataSource2" DataTextField="querystring" DataValueField="querystring"   CssClass="border-0 md-3 "></asp:ListBox>
+                        <h2>
+                            <ul class="list-unstyled overflow-scroll " id="ul2">
+                            </ul>
+                            </h2>
+
+
+                                                                                              
+
+                         <asp:SqlDataSource ID="SqlDataSource2" runat="server" ConnectionString="<%$ ConnectionStrings:employeeConnectionString3 %>" SelectCommand="SELECT * FROM [querystr] ;"></asp:SqlDataSource>
+&nbsp;&nbsp;&nbsp;
+
+
+                                                                                              
+
+                    
+
+
+
+                 </div>
+
+
+                 
+
+             </div>
+             <div class="col-8  ">
+                 <div class="text-center">
+
+                 <h1>content
+                    </h1>
+                     </div>
+                 <div id="MainContent1" >
+                  <asp:ContentPlaceHolder ID="MainContent" runat="server">
+                     
+
+            </asp:ContentPlaceHolder>
+                      
+                </div>
+                    <%--change here to show new modification--%>
+
+                  <div id="queryarea">
+                          <div >
+
+                              <div class="d-inline">
+                                  <label class="form-control  d-inline newquery" ><a class="nav-link d-inline newquery" runat="server" href="~/">New Query</a>   <asp:Image runat="server" src="/image/cancel.PNG"  style="width:15px"/></label>
+                                 
+                                   <label class="form-control d-inline createtable "><a class="nav-link d-inline createtable" runat="server" href="~/createtable.aspx">Create Table</a> <asp:Image runat="server" src="/image/cancel.PNG"  style="width:15px"/></label>
+
+                                     <label class="form-control d-inline crud"><a class="nav-link d-inline crud" runat="server" href="~/crud">Crud</a> <asp:Image runat="server" src="/image/cancel.PNG"  style="width:15px"/></label>
+                              </div>
+                               <hr />
+                              <div class="d-inline">
+
+                              <label class="form-label d-inline fw-bold" >select database</label>
+
+
+                              <asp:DropDownList ID="DropDownList1" runat="server" DataSourceID="sqlDataSource5" DataTextField="name" DataValueField="name" CssClass="form-select d-inline" style="width:auto">
+                              </asp:DropDownList>
+
+                                 
+                                  <%--<label id="max" class="form-label d-inline fw-bold">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Max Row</label>
+                                 <asp:TextBox runat="server" ID="textbox2" class="form-control d-inline  h-25" style="width:auto"/>--%>
+                                  <div class=" d-inline float-end">
+                                   <%--<asp:Button ID="createQueryBtn" runat="server" Text="Run" class="btn btn-secondary d-inline"  />--%>
+                                   <asp:Button ID="Button1" runat="server" Text="save" class="btn btn-success d-inline " data-bs-toggle="modal" data-bs-target="#saveFileModal" />
+</div>
+
+                                  </div>
+                              <br />
+                              <br />
+                             
+
+                                  <div id="designArea" class="w-100 border border-1 overflow-scroll position-relative" style="height: 500px">
+
+
+                                 <div class="modal fade" id="saveFileModal" tabindex="-1" aria-labelledby="saveFileLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg rounded-4 border-0">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="saveFileLabel">Save Query</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-light p-4">
+                <label class="form-label fw-semibold">Enter File Name</label>
+                <asp:TextBox ID="textbox14" runat="server" CssClass="form-control rounded-3 shadow-sm" placeholder="Enter file name..." />
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <asp:Button ID="Button3" runat="server" Text="Save" class="btn btn-primary fw-bold px-4" OnClick="Savequery" />
+                               <%-- <asp:Button ID="Button4" runat="server"  class="btn btn-primary fw-bold px-4"  OnClick="Savequery" />--%>
+                <button type="button" class="btn btn-secondary fw-bold px-4 w-auto" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+                                      
+                                     
+                                      <asp:TextBox ID="coulmn" runat="server" />
+
+                                      <asp:Button ID="Button2" runat="server" Text="+ ADD new Database" class="btn btn-success d-inline fw-bold" />
+                                      <asp:TextBox ID="textbox16" runat="server" CssClass="form-control-sm shadow-lg border border-info d-none" />
+                                      <asp:Button ID="Button9" runat="server" Text="" class="btn btn-success d-inline fw-bold d-none" OnClick="createdatabase" />
+                                      <asp:ListBox ID="ListBox4" runat="server" AutoPostBack="True" DataSourceID="SqlDataSource6" DataTextField="COLUMN_NAME" DataValueField="COLUMN_NAME"></asp:ListBox>
+                                      <asp:SqlDataSource ID="SqlDataSource6" runat="server" ConnectionString="<%$ ConnectionStrings:employeeConnectionString5 %>" ProviderName="<%$ ConnectionStrings:employeeConnectionString5.ProviderName %>" SelectCommand=" SELECT COLUMN_NAME
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_NAME = '';"></asp:SqlDataSource>
+                                      <button id="clearStorage" class="btn btn-danger">Clear Storage</button>
+                                     
+
+                                      <div  class="d-inline float-end" style="margin-left:320px">
+
+                                      <button id="Png" class="btn btn-primary">PNG</button>
+                                      <button id="Jpg" class="btn btn-primary">JPG</button>
+                                           
+                                          </div>
+
+                                      <div class="border border-1 rounded-2 border-success float-end mt-5 h-auto w-auto p-2 shadow-lg" >
+
+                                          <button id="button5" class="btn btn-primary rounded-5  w-100 my-3 btn1" style="background-color:gold">/</button>
+                                          <br />
+                                          <button id="button6" class="btn btn-primary rounded-5  w-100 my-3 btn2" style="background-color:gold">-></button>
+                                          <br />
+                                          <button id="button7" class="btn btn-primary rounded-5  w-100 my-3 btn3" style="background-color:gold"><-></button>
+                                            <br />
+                                          <button id="button8" class="btn btn-primary rounded-5  w-100 my-3" style="background-color:red"> <asp:Image runat="server" src="/image/bin.png"  style="width:15px" class="delete-condition"/></button>
+                                           <br />
+                                          <button id="button9" class="btn btn-primary rounded-5  w-100 my-3" style="background-color:gold">Drop</button>
+                                      </div>
+                                     
+                                      <input type="text" id="joinTextBox" hidden>
+                                      <%--model for join--%>
+                                      <!-- Modal -->
+<div class="modal fade" id="joinModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title">Select Join Type</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="joinForm">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="joinOption" value="INNER JOIN" id="radio1">
+            <label class="form-check-label" for="radio1">INNER JOIN</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="joinOption" value="LEFT JOIN" id="radio2">
+            <label class="form-check-label" for="radio2">LEFT JOIN</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="joinOption" value="RIGHT JOIN" id="radio3">
+            <label class="form-check-label" for="radio3">RIGHT JOIN</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="joinOption" value="FULL JOIN" id="radio4">
+            <label class="form-check-label" for="radio4">FULL JOIN</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="applyJoin" class="btn btn-success" data-bs-dismiss="modal">Apply Join</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+                                      <%--end--%>
+
+                                      <asp:TextBox runat="server" ID="textbox17" CssClass="d-none" />
+                                      <asp:Button ID="button17" runat="server" CssClass="d-none" OnClick="droptable" />
+
+                                  </div>
+                              
+                              <asp:SqlDataSource ID="SqlDataSource5" runat="server" 
+    ConnectionString="<%$ ConnectionStrings:employeeConnectionString2 %>"
+    SelectCommand="SELECT name FROM sys.databases WHERE state_desc = 'ONLINE';">
+</asp:SqlDataSource>
+
+
+                          </div>
+
+                 <%--idhar--%> 
+
+
+                 <div class="container mt-4">
+  <div class="table-responsive">
+    <table id="row" class="table table-bordered table-primary">
+      <thead class="table-secondary">
+        <tr>
+          <th>Column Name</th>
+          <th>Include</th>
+          <th>Group</th>
+          <th>Sort</th>
+          <th>Aggregate</th>
+          <th>Criteria</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Dynamic rows will be appended here -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
+
+                 <div class="container mt-4">
+                     <div class="table-responsive">
+                         <table class="table table-bordered table-secondary" id="filter">
+
+                             <thead class="table-secondary fw-bold">
+                                 <tr>
+                                     <th>
+                                         AND</th>
+                                     <th >OR</th>
+                                     <th id="tablelist">
+                                         
+
+                                     </th>
+                                     <th>
+                                           <asp:DropDownList class="form-select" ID="DropDownList3" runat="server"  AutoPostBack="false"   >
+                                               <asp:ListItem></asp:ListItem>
+                                               <asp:ListItem>=</asp:ListItem>
+                                               <asp:ListItem>!=</asp:ListItem>
+                                               <asp:ListItem>></asp:ListItem>
+                                               <asp:ListItem><</asp:ListItem>
+                                               <asp:ListItem>>=</asp:ListItem>
+                                               <asp:ListItem><=</asp:ListItem>
+                                               <asp:ListItem>LIKE</asp:ListItem>
+
+                       
+                                           </asp:DropDownList>
+
+                                     </th>
+                                     <th>
+                                         <asp:TextBox runat="server" ID="textbox3" CssClass="form-control-sm" />
+                                     </th>
+                                     <th>
+                                         <asp:Image runat="server" src="/image/bin.png"  style="width:15px" class="delete-condition"/>
+                                     </th>
+                                     <th>
+                                         Where
+                                         <%--<asp:Image runat="server" src="/image/plus.png"  style="width:15px"  AlternateText="where"/>--%>
+                                     </th>
+                                 </tr>
+
+
+                             </thead>
+                             <tbody>
+
+                             </tbody>
+                         </table>
+
+                     </div>
+
+                 </div>
+
+                       
+
+
+
+                              <div  class="w-100 border border-1 overflow-scroll position-relative" style="height: 500px">
+                                      
+                                                    <div class="d-inline mt-2 border-bottom-1 m-2">
+                                                      <label id="prelabel" class="form-control  d-inline bg-success p-3" style="color:white" ><a class="nav-link d-inline" id="preview" runat="server" href="~/">Preview</a>   <asp:Image runat="server" src="/image/cancel.PNG"  style="width:15px"/></label>
+                                 
+                                                       <label id="outlabel" class="form-control d-inline p-3 d-none"><a class="nav-link d-inline" id="output" runat="server" href="~/query">Output</a> <asp:Image runat="server" src="/image/cancel.PNG"  style="width:15px"/></label>
+                                                        
+                                                       
+                                                     </div>
+                                                      <div class="d-inline float-end">
+
+                                                         <asp:Button ID="createQueryBtn" runat="server" Text="Run" class="btn btn-primary d-inline"  />
+                                                      </div>
+                                
+
+
+                                  <div class="mt-5" >
+                                      <asp:TextBox id="textbox12" runat="server" />
+
+                                       <div class="fw-bold" id="previewarea">
+                                          <code class="text-primary p-3 rounded  d-block">
+    <ol id="statement" class="list-group list-group-numbered">
+       
+    </ol>
+</code>
+
+
+
+
+
+
+
+
+
+
+                                       </div>
+                                      <div id="outputarea" class="mt-5">
+                                         
+                                          <asp:GridView ID="GridView1" runat="server" BackColor="White" BorderColor="#999999" BorderStyle="Solid" BorderWidth="1px" CellPadding="3" ForeColor="Black" GridLines="Vertical" class="table table-bordered mt-3">
+                                                <AlternatingRowStyle BackColor="#CCCCCC" />
+                                                <FooterStyle BackColor="#CCCCCC" />
+                                                <HeaderStyle BackColor="Black" Font-Bold="True" ForeColor="White" />
+                                                <PagerStyle BackColor="#999999" ForeColor="Black" HorizontalAlign="Center" />
+                                                <SelectedRowStyle BackColor="#000099" Font-Bold="True" ForeColor="White" />
+                                                <SortedAscendingCellStyle BackColor="#F1F1F1" />
+                                                <SortedAscendingHeaderStyle BackColor="#808080" />
+                                                <SortedDescendingCellStyle BackColor="#CAC9C9" />
+                                                <SortedDescendingHeaderStyle BackColor="#383838" />
+                                            </asp:GridView>
+
+
+
+
+
+                                      </div>
+                              <div class="position-absolute  end-0 p-2" style="z-index: 10;">
+        <asp:Button runat="server" id="button13" Text="Execute query" class="btn btn-success fw-bold" OnClick="run" />
+    </div>
+                                   
+                                  </div>
+                                     
+                             </div>
+
+
+                           </div>
+                 <br />
+                 <br />
+                 <br />
+             <asp:GridView ID="GridView2" runat="server" AllowPaging="True" AllowSorting="True"
+    AutoGenerateColumns="False" DataSourceID="SqlDataSource4"
+    CssClass="table table-bordered table-hover table-striped"
+    DataKeyNames="querystring" 
+    OnRowDeleting="GridView2_RowDeleting" OnRowEditing="GridView2_RowEditing"
+    OnRowUpdating="GridView2_RowUpdating" OnRowCancelingEdit="GridView2_RowCancelingEdit">
+    <Columns>
+        <asp:CommandField ShowSelectButton="false" ShowEditButton="false" ShowDeleteButton="false"  />
+
+        <asp:BoundField DataField="querystring" HeaderText="Query String"
+            SortExpression="querystring" ItemStyle-CssClass="text-center" ReadOnly="True" />
+
+       <asp:TemplateField HeaderText="Query Description" SortExpression="querydescription">
+    <ItemTemplate>
+        <asp:Label ID="lblDescription" runat="server" Text='<%# Eval("querydescription") %>' CssClass="text-center" />
+    </ItemTemplate>
+    <EditItemTemplate>
+        <asp:TextBox ID="txtDescription" runat="server" 
+                     Text='<%# Bind("querydescription") %>' 
+                     TextMode="MultiLine" 
+                     Rows="5" 
+                     CssClass="form-control" 
+                     Width="100%" />
+    </EditItemTemplate>
+    <ItemStyle CssClass="text-center" />
+</asp:TemplateField>
+
+        <asp:TemplateField HeaderText="Actions">
+            <ItemTemplate>
+                <div class="d-flex justify-content-center gap-2">
+                    <asp:Button ID="btnEdit" runat="server" Text="Edit" CssClass="btn btn-warning btn-sm edit-btn"
+                            ToolTip='<%# Eval("querydescription") %>'
+                        data-query='<%# Eval("querystring") %>' 
+                        CommandName="Edit" CommandArgument="<%# Container.DataItemIndex %>" 
+                />
+
+
+
+                    <asp:Button ID="btnDelete" runat="server" Text="Delete" CssClass="btn btn-danger btn-sm"
+                        CommandName="Delete" CommandArgument="<%# Container.DataItemIndex %>"
+                      OnClientClick="return confirm('Are you sure you want to delete this item?');" />
+                </div>
+            </ItemTemplate>
+            <EditItemTemplate>
+                <div class="d-flex justify-content-center gap-2">
+                    <asp:Button ID="btnUpdate" runat="server" Text="Update" CssClass="btn btn-success btn-sm"
+                        CommandName="Update" CommandArgument="<%# Container.DataItemIndex %>" />
+                    <asp:Button ID="btnCancel" runat="server" Text="Cancel" CssClass="btn btn-secondary w-auto"
+                        CommandName="Cancel" CommandArgument="<%# Container.DataItemIndex %>" />
+                </div>
+            </EditItemTemplate>
+        </asp:TemplateField>
+    </Columns>
+</asp:GridView>
+
+
+
+
+
+                 <!-- Edit Modal -->
+
+
+
+
+                 
+             </div>
+
+
+
+               <!-- Bootstrap Modal -->
+               <!-- Bootstrap Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Tables</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+           
+            <div class="modal-footer">
+                <asp:Button ID="button21" runat="server" Text="Confirm Update"
+                    CssClass="btn btn-danger" OnClick="ButtonLoadAllTables_Click" />
+            </div>
+        </div>
+    </div>
+</div>
+
+              <asp:TextBox ID="HiddenTableList" runat="server" CssClass="form-control mb-3" />
+           
+             
+
+
+                           <asp:SqlDataSource ID="SqlDataSource4" runat="server"
+    ConnectionString="<%$ ConnectionStrings:employeeConnectionString4 %>"
+    SelectCommand="SELECT * FROM querystr"
+    DeleteCommand="DELETE FROM querystr WHERE querystring = @querystring"
+    UpdateCommand="UPDATE querystr SET querydescription = @querydescription WHERE querystring = @querystring">
+    <DeleteParameters>
+        <asp:Parameter Name="querystring" Type="String" />
+    </DeleteParameters>
+    <UpdateParameters>
+        <asp:Parameter Name="querydescription" Type="String" />
+        <asp:Parameter Name="querystring" Type="String" />
+    </UpdateParameters>
+</asp:SqlDataSource>
+
+                 
+                
+             </div>
+
+
+             </div>
+
+
+
+
+         </div>
+         
+
+         
+
+
+       <%-- <script>
+            
+            $(document).ready(function () {
+                $("#<%= ListBox1.ClientID %>").hide();
+
+              
+
+                var items = [];
+                $("#<%= ListBox1.ClientID %> option").each(function () {
+                    items.push($(this).val()); 
+                });
+                $.each(items, function (index, val) {
+                   
+                    var val1 = $("<li></li>").text(val);
+
+                   
+                    var val2 = $("<img>")
+                        .attr("src", "/image/edit-table.png")
+                        .css("width", "20px")
+                        .addClass("mx-3")
+                        
+
+                    
+                    val1.append(val2);
+                    
+
+                   
+                    $("#ul1").append(val1);
+                    $("#ul1").append("<br/>");
+                });
+            });
+
+        </script>--%>
+
+
+
+
+
+          <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        $("#<%= ListBox1.ClientID %>").hide();
+        $("#<%= ListBox2.ClientID %>").hide();
+        $("#<%= ListBox3.ClientID %>").hide();
+        $("#<%= textbox10.ClientID %>").hide();
+        $("#<%= Button10.ClientID %>").hide();
+        $("#<%= textbox11.ClientID %>").hide();
+        $("#<%= coulmn.ClientID %>").hide();
+        $("#<%= textbox12.ClientID %>").hide();
+      
+
+        $("#<%= Button11 .ClientID %>").hide();
+        $("#<%=ListBox4.ClientID%>").hide();
+     /*   $("#outputarea").hide();*/
+
+       
+        $("#savebox").hide();
+      
+        var currentUrl = window.location.href;
+
+
+        $("#<%= Button2.ClientID %>").click(function (event) {
+            event.preventDefault(); // Prevent default button behavior
+
+            // ✅ Prompt user for database name
+            var dbName = prompt("Enter Database Name:");
+
+            // ✅ If user enters a valid name
+            if (dbName && dbName.trim().length > 0) {
+                var textbox = $("#<%= textbox16.ClientID %>");
+                textbox.val(dbName.trim()); // Set value in textbox
+                /* textbox.removeClass("d-none").show(); */// Show the textbox
+
+                // ✅ Automatically trigger Button9
+                $("#<%= Button9.ClientID %>").trigger("click");
+            } else {
+                alert("Database name cannot be empty!");
+            }
+        });
+
+
+      <%--  $("#<%= Button1.ClientID %>").click(function () {
+            alert("hel");
+            const queryString = localStorage.getItem("querystring");
+            
+
+            if (queryString && queryString.trim() !== "") {
+                alert(queryString);
+                $("#<%= textbox14.ClientID %>").val(queryString);
+
+            }
+
+            // Clear localStorage after submission
+            localStorage.setItem("querystring", "");
+
+          
+            
+        });--%>
+
+
+      
+
+
+
+        // Check if the URL contains 'CreateTable.aspx'
+        if (currentUrl.includes("createtable")) {
+            $("#queryarea").hide(); // Hide query area
+        }
+
+        if (currentUrl.includes("crud")) {
+            $("#queryarea").hide(); // Hide query area
+            $("#strtable").hide();
+        }
+        var username = '<%= Session["username"] %>'; 
+        if (username) {
+            $("#<%= login.ClientID %>").text("logout"); 
+        $("#<%= signup.ClientID %>").hide();
+        }
+
+
+
+
+
+       
+
+
+
+        $("#<%= login.ClientID %>").click(function () {
+
+
+            if ($("#<%= login.ClientID %>").text().trim().toLowerCase() === "logout") {
+                localStorage.removeItem("database");
+                localStorage.removeItem("listItems");
+
+
+
+                $("#<%= login.ClientID %>").text("Login");
+                $("#<%= signup.ClientID %>").show();
+                window.location.href = "/";
+            }
+        });
+
+        $(".createtable").click(function (event) {
+
+            $(".newquery").removeClass("bg-primary");
+            $(".crud").removeClass("bg-primary");
+
+            $(".createtable").addClass("bg-primary");
+
+        });
+
+        $(".crud").click(function (event) {
+
+            $(".newquery").removeClass("bg-primary");
+            $(".createtable").removeClass("bg-primary");
+            $(".crud").addClass("bg-primary");
+
+        });
+
+        $(".newquery").click(function (event) {
+            $(".crud").removeClass("bg-primary");
+            $(".createtable").removeClass("bg-primary");
+            $(".newquery").addClass("bg-primary");
+
+            localStorage.removeItem("tablesData");
+            localStorage.removeItem("firstLoad");
+            /* $("#designArea").empty();*/
+            $(".draggable-table").remove();
+            $("#row tbody").empty();
+            $("#<%= textbox12.ClientID %>").val("");
+            $("#statement").empty();
+            $("#outputarea").empty();
+            lines.forEach(function (line) {
+                line.remove();
+            });
+            lines = [];
+            event.preventDefault();
+
+
+
+        });
+
+
+       
+
+
+       
+
+
+        var database = localStorage.getItem("database");
+
+        $("#databaseList").on("click", "li", function (event) {
+            // Prevent triggering when clicking on an image inside the <li>
+            if ($(event.target).is("img")) {
+                return;
+            }
+
+            var selectedText = $(this).find("strong").text().trim();
+
+    // Debugging alert
+            $(this).css("color", "red");
+
+            $("#<%= textbox10.ClientID %>").val(selectedText).css('color', 'grey');
+          $("#<%= Button10.ClientID %>").click();
+      });
+
+
+        $("#<%= DropDownList1.ClientID %>").change(function () {
+            var selectedText = $(this).find(":selected").text(); // Get selected option text
+            $("#<%= textbox10.ClientID %>").val(selectedText);   // Set value in textbox
+
+           $("#<%= Button10.ClientID %>").trigger("click"); // Trigger button click
+       });
+
+
+
+        $("#ul1").on("click", "li", function () {
+            var selectedText = $(this).text();
+
+
+            $(this).css("color", "red");
+
+
+            $("#<%= textbox11.ClientID %>").val(selectedText);
+
+    
+              $("#<%= Button11.ClientID %>").click();
+          });
+
+
+
+      
+       
+            let items = [];
+            $("#<%= ListBox3.ClientID %> option").each(function () {
+                items.push($(this).val());
+            });
+            populateUL2(items);
+        
+
+       <%-- if (database.toString() !== "" ) {
+            
+            $("#<%= login.ClientID %>").text("logout"); 
+                  
+
+            $("#<%= signup.ClientID %>").hide(); 
+        }--%>
+
+
+
+
+        if ($("#<%= textbox12.ClientID %>").length) {  
+            let statement = $("#<%= textbox12.ClientID %>").val().split(" ");
+
+            for (let i = 0; i < statement.length; i += 2) {
+                let listItemText = statement[i];
+
+                if (i + 1 < statement.length) {
+                    listItemText += " " + statement[i + 1];
+                }
+
+                let list = $("<li></li>").text(listItemText);
+                $("#statement").append(list);
+            }
+        } 
+
+
+
+        //let savedItems = localStorage.getItem("listItems");
+
+        //if (savedItems) {
+
+        //    let items = JSON.parse(savedItems);
+        //    populateUL(items);
+        //} 
+
+<%--        $("#<%= Button10.ClientID %>").click(function(){--%>
+           
+            let savedItems = localStorage.getItem("listItems");
+
+        if (savedItems) {
+            
+                let items = JSON.parse(savedItems);
+                populateUL(items);
+            }
+            else {
+          
+                let items =[];
+                $("#<%= ListBox1.ClientID %> option").each(function () {
+                    items.push($(this).val());
+                });
+
+
+                localStorage.setItem("listItems", JSON.stringify(items));
+                
+
+                populateUL(items);
+            }
+
+        let iteam1 = [];
+        $("#<%= ListBox2.ClientID %> option").each(function () {
+            iteam1.push($(this).val());
+
+        })
+
+        populateUL1(iteam1)
+
+        //});
+
+        function populateUL(items) {
+            $.each(items, function (index, val) {
+                let val1 = $("<li></li>")
+                    .addClass("table-item d-flex align-items-center p-2 ms-4 rounded shadow-sm text-dark fw-bold mt-2")
+                    .css({
+                        "list-style": "none",
+                        "cursor": "pointer",
+                        "background": "#ffffff",
+                        "margin-bottom": "5px",
+                        
+                    });
+
+                let val2 = $("<img>")
+                    .attr("src", "/image/edit-table.png")
+                    .css({ "width": "20px", "margin-right": "10px", "cursor": "pointer" }) // margin-right now
+                    .addClass("edit-icon");
+
+                val1.append(val2);     // add icon first
+                val1.append(val);      // then add text
+
+                $("#ul1").append(val1);
+            });
+        }
+
+
+
+
+
+        function populateUL1(items) {
+            $.each(items, function (index, val) {
+
+
+
+                let val1 = $("<li></li>").text(val);
+
+
+                let val2 = $("<img>")
+                    .attr("src", "/image/download.png")
+                    .css("width", "20px")
+                    .addClass("mx-3");
+
+
+                val1.append(val2);
+
+
+                $("#ul2").append(val1);
+                $("#ul2").append("<br/>");
+
+
+            });
+        }
+
+        function populateUL2(items) {
+            $.each(items, function (index, val) {
+                let val0 = $("<img>")
+                    .attr("src", "/image/plus1.png")
+                    .css("width", "20px")
+                    .addClass("mx-3 plus-icon")
+                    .data("dbname", val);
+
+                let val1 = $("<li></li>")
+                    .attr("id", "db-" + val)
+                    .addClass("db-item")
+                    .text(val);
+
+
+                let val2 = $("<img>")
+                    .attr("src", "/image/download.png")
+                    .css("width", "20px")
+                    .addClass("mx-3");
+
+                // Append images to the list item correctly
+                val1.prepend(val0); // Append plus1.png before text
+                val1.append(val2);  // Append download.png after text
+
+                $("#ul3").append(val1);
+                $("#ul3").append("<br/>");
+            });
+        }
+
+
+
+        let databaseTables = JSON.parse(localStorage.getItem("databaseTables"));
+      
+
+        if (databaseTables) {
+            $.each(databaseTables, function (dbName, tables) {
+                let dbContainer = $("<li></li>")
+                    .attr("id", "db-" + dbName)
+                    .addClass("db-item d-flex align-items-center justify-content-between p-2 rounded shadow-sm")
+                    .html(`
+                <div class="d-flex align-items-center">
+                    <img src="<%= ResolveUrl("~/image/plus1.png") %>" class="toggle-icon me-2" data-dbname="${dbName}" width="20px"> 
+                    <strong class="db-name text-dark">${dbName}</strong> 
+                </div>
+                <img src="<%= ResolveUrl("~/image/download.png") %>" class="download-icon" width="20px">
+            `)
+            .css({ "list-style": "none", "margin-top": "10px", "cursor": "pointer", "background": "#f8f9fa" });
+
+        let tableList = $("<ul></ul>")
+            .attr("id", "tables-" + dbName)
+            .addClass("nested-list ms-4 p-2 border rounded bg-light shadow-sm")
+            .css({ "display": "none" });
+
+        $.each(tables, function (index, table) {
+            let listItem = $("<li></li>")
+                .addClass("table-item d-flex align-items-center p-1 rounded")
+                .css({ "list-style": "none", "cursor": "pointer", "background": "#ffffff", "margin-bottom": "5px" })
+                .html(`
+                    <img src='<%= ResolveUrl("~/image/folder.png") %>' width='18' class='me-2'/>
+                    <span class="text-dark">${table}</span>
+                `);
+
+            tableList.append(listItem);
+        });
+
+        dbContainer.append(tableList);
+        $("#databaseList").append(dbContainer);
+    });
+        }
+
+
+        $(".toggle-icon").on("click", function () {
+            let dbName = $(this).data("dbname");
+            let toggleIcon = $(this);
+            let tableList = $("#tables-" + dbName);
+
+            if (tableList.is(":visible")) {
+                tableList.slideUp();
+                toggleIcon.attr("src", "/image/plus1.png");
+            } else {
+                tableList.slideDown();
+                toggleIcon.attr("src", "/image/minus.png");
+            }
+        });
+
+
+
+
+
+
+        $("#clearStorage").click(function (event) {
+            localStorage.removeItem("tablesData");
+            localStorage.removeItem("firstLoad");
+            /* $("#designArea").empty();*/
+            $(".draggable-table").remove();
+            $("#row tbody").empty();
+            $("#<%= textbox12.ClientID %>").val("");
+            $("#statement").empty();
+            $("#outputarea").empty();
+            $("#<%= textbox14.ClientID %>").val("");
+            lines.forEach(function (line) {
+                line.remove();
+            });
+            lines = [];
+            event.preventDefault();
+        });
+
+
+        if ($("#<%= textbox12.ClientID %>").val()=="")
+        {
+        $("#outputarea").empty();
+         }
+
+
+        
+
+
+
+
+
+
+        function displayDesignArea(tableName, columnsData) {
+            
+            let tablesData = JSON.parse(localStorage.getItem("tablesData")) || [];
+
+
+            if (localStorage.getItem("firstLoad")) {
+                
+
+            }
+            else if (tableName && columnsData) {
+                tablesData.push({ tableName: tableName, columns: columnsData.split(",") });
+                localStorage.setItem("tablesData", JSON.stringify(tablesData));
+              
+            }
+
+            
+            var designArea = $("#designArea");
+           
+
+            tablesData.forEach(function (tableData) {
+              
+                var tableDiv = $("<div></div>")
+                    .addClass("border p-3 mb-3 draggable-table  overflow-scroll h-25")
+                    .css({
+                        backgroundColor: "#f9f9f9",
+                        borderRadius: "8px",
+                        width: "200px",
+                        marginLeft: "20px",
+                        cursor:"move"
+                       
+                    });
+
+                var tableHeader = $("<h5></h5>")
+                    .text("Table: " + tableData.tableName)
+                    .css({
+                        fontWeight: "bold",
+                        borderBottom: "1px solid #ddd",
+                        paddingBottom: "5px"
+                    });
+
+                tableDiv.append(tableHeader);
+
+                tableData.columns.forEach(function (column) {
+                    var checkboxDiv = $("<div></div>").css("marginTop", "5px");
+
+                    var checkbox = $("<input>")
+                        .addClass("table-checkbox")
+                        .attr("type", "checkbox")
+                        .attr("value", column.trim())
+                        .attr("data-column-name", column.trim()) // Fixed closing bracket
+                        .attr("data-table-name", tableData.tableName); // Fixed placement
+
+                    var label = $("<label></label>")
+                        .text(" " + column.trim())
+                        .css("marginLeft", "5px");
+
+                    checkboxDiv.append(checkbox).append(label);
+                    tableDiv.append(checkboxDiv);
+                });
+
+
+                designArea.append(tableDiv);
+               
+            
+                $(".draggable-table").draggable({ containment: "#designArea" });
+            });
+            
+        }
+
+     
+                    $("#<%= textbox11.ClientID %>").change(function () {
+                        displayDesignArea($("#<%= textbox11.ClientID%>").val(), $("#<%= coulmn.ClientID%>").val());
+
+                     });
+
+        
+            // Run functions only on first load
+            displayDesignArea($("#<%= textbox11.ClientID%>").val(), $("#<%= coulmn.ClientID%>").val());
+             getfield();
+
+             // Set a flag in sessionStorage to prevent running again on refresh
+
+
+       
+
+        $(".edit-btn").on("click", function (event) {
+            localStorage.removeItem("tablesData");
+            localStorage.removeItem("firstLoad");
+            /* $("#designArea").empty();*/
+            $(".draggable-table").remove();
+            $("#<%= textbox14.ClientID %>").val("");
+            $("#row tbody").empty();
+            $("#<%= textbox12.ClientID %>").val("");
+            $("#statement").empty();
+            $("#outputarea").empty();
+            lines.forEach(function (line) {
+                line.remove();
+            });
+            lines = [];
+           
+            var description = $(this).attr("title");
+            var queryname = $(this).attr("data-query");
+            $("#<%= textbox14.ClientID %>").val(queryname);
+
+                     if (!description) return;
+
+                 matches = new Set();
+
+   
+                let regexDotNotation = /\b([a-zA-Z0-9_]+)\.[a-zA-Z0-9_]+\b/g;
+                let match;
+                while ((match = regexDotNotation.exec(description)) !== null) {
+                    matches.add(match[1]);
+                }
+
+    // Match FROM clause
+                let regexFromClause = /\bFROM\s+([a-zA-Z0-9_,\s]+)/i;
+                let fromMatch = description.match(regexFromClause);
+                if (fromMatch && fromMatch[1]) {
+                    fromMatch[1].split(',').forEach(t => matches.add(t.trim()));
+                }
+
+    
+                let regexOther = /\b(?:JOIN|UPDATE|INTO|DELETE\s+FROM)\s+([a-zA-Z0-9_]+)/gi;
+                while ((match = regexOther.exec(description)) !== null) {
+                    matches.add(match[1]);
+                }
+
+                let uniqueTables = Array.from(matches);
+                console.log("Unique Tables:", uniqueTables);
+
+   
+           $("#<%= HiddenTableList.ClientID %>").val(uniqueTables.join(","));
+
+           // Show the Bootstrap modal
+           
+            $('#editModal').modal('show');
+            event.preventDefault();
+       });
+
+
+
+        
+
+
+
+
+
+        $("#<%= button13.ClientID %>").click(function () {
+
+            localStorage.setItem("firstLoad", "true");
+            
+        });
+
+        //function getfield() {
+
+        //    let tablesData = JSON.parse(localStorage.getItem("tablesData")) || [];
+
+        //    if (tablesData.length > 0) {
+        //        tablesData.forEach(function (tableEntry) {
+        //            tableEntry.columns.forEach(function (columnName) {
+        //                let row = $("<tr></tr>");
+
+        //                let columnCell = $("<td></td>").append(
+        //                    $("<div>", { class: "d-flex align-items-center" }).append(
+        //                        $("<input>", {
+        //                            type: "checkbox",
+        //                            value: columnName,
+        //                            class: "form-check-input me-2",
+        //                            id: "checkbox_" + tableEntry.tableName + "." + columnName
+        //                        }),
+        //                        $("<label>", {
+        //                            class: "form-check-label",
+        //                            for: "checkbox_" + tableEntry.tableName + "." + columnName
+        //                        }).text(tableEntry.tableName + "." + columnName)
+        //                    )
+        //                ).css("width", "auto");
+
+
+
+
+
+
+        //                let aliasCell = $("<td></td>").append($("<input>").attr("type", "text").addClass("form-control").attr("placeholder", "Enter alias"));
+
+        //                let sort = $("<select></select>")
+        //                    .addClass("form-select")
+        //                    .append($("<option></option>").val("ASC").text("ASCENDING"))
+        //                    .append($("<option></option>").val("DESC").text("DECENDING"));
+
+        //                let sortCell = $("<td></td>").append(
+        //                    $("<div>", { class: "d-flex align-items-center" }).append(
+        //                        $("<input>", {
+        //                            type: "checkbox",
+        //                            class: "form-check-input",
+        //                            value: tableEntry.tableName + "." + columnName,
+        //                        }),
+        //                        sort
+        //                    )
+        //                ).css("width", "auto");
+        //                let groupCell = $("<td></td>").append($("<input>", {
+        //                    type: "checkbox",
+        //                    class: "form-check-input",
+        //                    value: tableEntry.tableName + "." + columnName,
+        //                }));
+        //                let criteriacell = $("<td></td>").append($("<input>").attr("type", "text").addClass("form-control").attr("placeholder", "Enter criteria"));
+        //                let aggregateCell = $("<td></td>");
+
+        //                let aggregateSelect = $("<select></select>")
+        //                    .addClass("form-select")
+        //                    .append($("<option></option>").val("sum").text("Sum"))
+        //                    .append($("<option></option>").val("avg").text("Average"))
+        //                    .append($("<option></option>").val("count").text("Count"));
+
+        //                aggregateCell.append(aggregateSelect);
+        //                row.append(columnCell, aliasCell, sortCell, groupCell,aggregateCell,criteriacell);
+        //                $("#row tbody").append(row);
+        //            });
+        //        });
+        //    }
+
+
+
+
+        //}
+
+
+
+        function getfield() {
+            let tablesData = JSON.parse(localStorage.getItem("tablesData")) || [];
+            let gridView = $("#row tbody"); // Define gridView at the beginning
+
+            if (tablesData.length === 0) {
+                gridView.empty(); // ✅ Properly clear the table body
+                return; // ✅ Exit function early if no tables exist
+            }
+
+
+            if (tablesData.length > 0) {
+                let gridView = $("#row tbody");
+                gridView.empty(); // Clear previous rows
+
+                tablesData.forEach(function (tableEntry) {
+                    tableEntry.columns.forEach(function (columnName) {
+                        let row = $("<tr></tr>");
+
+                        // Column Name Cell
+                        let columnCell = $("<td></td>").text(tableEntry.tableName + "." + columnName);
+
+                        // Include Checkbox Cell
+                        let includeCell = $("<td></td>").append(
+                            $("<input>", {
+                                type: "checkbox",
+                                class: "form-check-input",
+                                id: "chkColumn_" + tableEntry.tableName + "_" + columnName
+                            })
+                        );
+
+                        // Group Checkbox Cell
+                        let groupCell = $("<td></td>").append(
+                            $("<input>", {
+                                type: "checkbox",
+                                class: "form-check-input",
+                                id: "chkGroup_" + tableEntry.tableName + "_" + columnName
+                            })
+                        );
+
+                        // Sort Checkbox & Dropdown Cell
+                        let sortCheckbox = $("<input>", {
+                            type: "checkbox",
+                            class: "form-check-input me-2",
+                            id: "chkSort_" + tableEntry.tableName + "_" + columnName
+                        }).change(function () {
+                            $(this).siblings("select").prop("disabled", !this.checked);
+                          
+                        });
+
+                        let sortDropdown = $("<select></select>")
+                            .addClass("form-select ms-2") // Add margin for spacing
+                            .attr("id", "ddlSort_" + tableEntry.tableName + "_" + columnName)
+                            .prop("disabled", true)
+                            .append($("<option></option>").val("ASC").text("ASC"))
+                            .append($("<option></option>").val("DESC").text("DESC"));
+
+                        let sortCell = $("<td></td>").append(
+                            $("<div>", { class: "d-flex align-items-center" }).append(sortCheckbox, sortDropdown)
+                        );
+
+                        // Aggregate Function Cell
+                        let aggregateCell = $("<td></td>").append(
+                            $("<select></select>")
+                                .addClass("form-select")
+                                .append($("<option></option>").val("").text("None"))
+                                .append($("<option></option>").val("SUM").text("SUM"))
+                                .append($("<option></option>").val("COUNT").text("COUNT"))
+                                .append($("<option></option>").val("AVG").text("AVG"))
+                                .append($("<option></option>").val("MIN").text("MIN"))
+                                .append($("<option></option>").val("MAX").text("MAX"))
+                        );
+
+                        // Criteria Input Cell
+                        let criteriaCell = $("<td></td>").append(
+                            $("<input>", {
+                                type: "text",
+                                class: "form-control",
+                                placeholder: "Enter condition (e.g., > 10)"
+                            })
+                        );
+
+                        row.append(columnCell, includeCell, groupCell, sortCell, aggregateCell, criteriaCell);
+                        gridView.append(row);
+                    });
+                });
+            }
+          
+        }
+
+
+
+
+
+
+        let tablesData = JSON.parse(localStorage.getItem("tablesData")) || [];
+        let selectElement = $("<select></select>").addClass("form-select");
+        $("#tablelist").append(selectElement);
+
+        if (tablesData.length > 0) {
+            tablesData.forEach(function (tableEntry) {
+                tableEntry.columns.forEach(function (columnName) {
+                    let optionText = `${tableEntry.tableName}.${columnName}`;
+                    let option = $("<option></option>")
+                        .text(optionText)
+                        .addClass("fw-bold");
+                    selectElement.append(option);
+                });
+            });
+        }
+
+
+
+        $("th:contains('AND'), th:contains('OR')").click(function () {
+            $("th:contains('AND'), th:contains('OR')").css("background-color", "");
+            $(this).css("background-color", "#ffeeba"); 
+        });
+
+
+
+
+
+        //funaction to make the query
+
+
+        
+            // Handle "AND" or "OR" button click to add a new condition row
+        $("#filter").on("click", "th:first-child, th:nth-child(2), th:nth-child(7)", function () {
+            let logic = $(this).text().trim(); // "AND", "OR", or "where"
+            let selectedColumn = $("#tablelist select").val();
+            let selectedOperator = $("#DropDownList3").val();
+            let enteredValue = $("#textbox3").val();
+
+            if (!selectedColumn || !enteredValue) {
+                alert("Please select a column and enter a value before adding a condition.");
+                return;
+            }
+
+            // Logic options
+            const logicOptions = ["AND", "OR", "Where"];
+            const operatorOptions = ["=", "!=", ">", "<", ">=", "<=", "LIKE"]; // Adjust if needed
+
+            // Logic dropdown
+            let logicSelect = `<select class="logic-select">
+        ${logicOptions.map(opt => `<option value="${opt}" ${opt === logic ? 'selected' : ''}>${opt}</option>`).join('')}
+    </select>`;
+
+            // Column dropdown using tablesData
+            let columnSelect = `<select class="column-select">`;
+            if (tablesData.length > 0) {
+                tablesData.forEach(function (tableEntry) {
+                    tableEntry.columns.forEach(function (columnName) {
+                        let fullColumnName = `${tableEntry.tableName}.${columnName}`;
+                        columnSelect += `<option value="${fullColumnName}" ${fullColumnName === selectedColumn ? 'selected' : ''}>${fullColumnName}</option>`;
+                    });
+                });
+            }
+            columnSelect += `</select>`;
+
+            // Operator dropdown
+            let operatorSelect = `<select class="operator-select">
+        ${operatorOptions.map(opt => `<option value="${opt}" ${opt === selectedOperator ? 'selected' : ''}>${opt}</option>`).join('')}
+    </select>`;
+
+            // Final editable row
+            let newRow = `<tr>
+        <td>${logicSelect}</td>
+        <td></td>
+        <td>${columnSelect}</td>
+        <td>${operatorSelect}</td>
+        <td><input type="text" class="value-input" value="${enteredValue}" /></td>
+        <td><img src="/image/bin.png" class="delete-condition" style="width:15px; cursor:pointer;"></td>
+    </tr>`;
+
+            $("#filter tbody").append(newRow);
+
+            // Clear input
+            $("#textbox3").val("");
+        });
+
+
+        // Handle row deletion
+        $("#filter").on("click", ".delete-condition", function () {
+            $(this).closest("tr").remove();
+        });
+
+
+           
+          
+            // Handle query generation
+        $("#createQueryBtn").click(function (event) {
+            event.preventDefault();
+                let selectedColumns = [];
+                let groupByColumns = [];
+                let orderByColumns = [];
+                let aggregateColumns = [];
+                let whereConditions = [];
+                let tables = new Set(); // Store unique table names
+
+                // **Loop through GridView rows**
+                $("#row tbody tr").each(function () {
+                    let columnCell = $(this).find("td:eq(0)").text().trim();
+                    let includeCheckbox = $(this).find("td:eq(1) input[type='checkbox']").is(":checked");
+                    let groupCheckbox = $(this).find("td:eq(2) input[type='checkbox']").is(":checked");
+                    let sortCheckbox = $(this).find("td:eq(3) input[type='checkbox']").is(":checked");
+                    let sortOrder = $(this).find("td:eq(3) select").val();
+                    let aggregateFunction = $(this).find("td:eq(4) select").val();
+                    let criteria = $(this).find("td:eq(5) input").val().trim();
+
+                    if (includeCheckbox) {
+                        if (aggregateFunction && aggregateFunction !== "None") {
+                            aggregateColumns.push(`${aggregateFunction}(${columnCell}) AS ${aggregateFunction}_${columnCell.replace('.', '_')}`);
+                        } else {
+                            selectedColumns.push(columnCell);
+                        }
+                        tables.add(columnCell.split('.')[0]); // Extract table name
+                    }
+
+                    if (groupCheckbox) {
+                        groupByColumns.push(columnCell);
+                    }
+
+                    if (sortCheckbox) {
+                        orderByColumns.push(`${columnCell} ${sortOrder}`);
+                    }
+
+                    if (criteria) {
+                        whereConditions.push(`${columnCell} LIKE '%${criteria}%'`);
+                    }
+                });
+
+                // **Loop through Where condition table**
+                $("#filter tbody tr").each(function () {
+                    let logic = $(this).find("select.logic-select").val();        // Logic (AND/OR/where)
+                    let column = $(this).find("select.column-select").val();      // Column name
+                    let operator = $(this).find("select.operator-select").val();  // Operator
+                    let value = $(this).find("input.value-input").val().trim();   // Input value
+ // Value (5th cell)
+
+                    if (column && value) {
+                        let condition = `${column} ${operator} '${value}'`;
+                        if (logic) {
+                            condition = `${logic} ${condition}`;
+                        }
+                        whereConditions.push(condition);
+                    }
+                });
+
+                // **Construct SQL Query**
+                let query = "SELECT ";
+
+                if (selectedColumns.length === 0 && aggregateColumns.length === 0) {
+                    query += "*";
+                } else {
+                    query += [...selectedColumns, ...aggregateColumns].join(", ");
+                }
+
+            let selectedTables1 = Array.from(tables);
+        
+            if (selectedTables1.length === 2) {
+                let table1 = selectedTables1[0];
+                let table2 = selectedTables1[1];
+               /* alert(table1 +table2);*/
+
+                // Find matching columns for the ON condition using checkboxes
+                let joinConditions = [];
+                $(".table-checkbox:checked").each(function () {
+                    let column = $(this).data("column-name");
+                    let table = $(this).data("table-name");
+                    //alert(table + "." + column);
+                    //alert(selectedTables1);
+
+                    if (selectedTables1.includes(table)) {
+                        joinConditions.push(`${table}.${column}`);
+                    }
+                });
+
+                if (joinConditions.length >= 2) {
+                    const joinType = $('#joinTextBox').val();
+                    
+                    query += ` FROM ${table1} ${joinType} ${table2} ON ${joinConditions[0]} = ${joinConditions[1]}`;
+
+                } else {
+                    query += ` FROM ${table1}, ${table2}`; // Default to comma-separated if no valid join condition
+                }
+            } else {
+                query += " FROM " + selectedTables1.join(", ");
+            }
+
+            // Add WHERE conditions if available
+            if (whereConditions.length > 0) {
+                query += " " + whereConditions.join(" ");
+            }
+
+            // Add GROUP BY if available
+            if (groupByColumns.length > 0) {
+                query += " GROUP BY " + groupByColumns.join(", ");
+            }
+
+            // Add ORDER BY if available
+            if (orderByColumns.length > 0) {
+                query += " ORDER BY " + orderByColumns.join(", ");
+            }
+
+            // **Set the generated query to textbox12**
+            $("#textbox12").val(query);
+            if ($("#<%= textbox12.ClientID %>").length) {  
+                let statement = $("#<%= textbox12.ClientID %>").val().split(" ");
+
+                for (let i = 0; i < statement.length; i += 2) {
+                    let listItemText = statement[i];
+
+                    if (i + 1 < statement.length) {
+                        listItemText += " " + statement[i + 1];
+                    }
+
+                    let list = $("<li></li>").text(listItemText);
+                    $("#statement").append(list);
+                }
+            } 
+            });
+        
+
+
+        $("#<%= output.ClientID %>").click(function (event) {
+            event.preventDefault();
+
+            $("#prelabel").removeClass("bg-success").addClass("bg-light").css("color","black");
+
+            $("#outlabel").removeClass("bg-light").addClass("bg-success").css("color","black");
+
+            $("#outputarea").show();
+            $("#previewarea").hide();
+            $("#<%= button13.ClientID %>").hide();
+
+
+        });
+
+        $("#<%= preview.ClientID %>").click(function (event) {
+            event.preventDefault();
+
+
+
+            $("#outlabel").removeClass("bg-success").addClass("bg-light").css("color", "black");
+
+            $("#prelabel").removeClass("bg-light").addClass("bg-success").css("color", "black");
+
+            $("#previewarea").show();
+            $("#outputarea").hide();
+            $("#<%= button13.ClientID %>").show();
+
+
+
+        });
+
+       
+
+        $("#<%= Button1.ClientID %>").click(function (event) {
+            
+            $("#savebox").show();
+            event.preventDefault();
+
+        });
+        <%--$("#<%= Button4.ClientID %>").click(function (event) {
+
+            $("#savebox").hide();
+            event.preventDefault();
+
+
+
+        });--%>
+
+
+
+
+        ///for draw line between two  tables
+        let selectedTables = [];
+        let lines = [];
+
+        $(".draggable-table").click(function () {
+            if (selectedTables.length < 2) {
+                $(this).addClass("table-selected border-primary").css({ backgroundColor:"yellow" }); // Highlight selected table
+                selectedTables.push(this);
+            }
+
+            if (selectedTables.length === 2) {
+                $(".btn1").prop("disabled", false);
+                
+            }
+        });
+
+
+        $("#button9").click(function (event) {
+            var selectedTableDiv = $(".draggable-table.table-selected"); // Find the selected table div
+
+            if (selectedTableDiv.length === 1) {
+                let tablename = selectedTableDiv.find("h5").text().replace("Table: ", "").trim(); // Extract table name
+
+                if (tablename) {
+                   
+                   
+                    var query = "DROP TABLE [" + tablename + "];"; // Wrap table name in brackets to prevent SQL errors
+                    
+                    $("#textbox17").val(query); // Store query in textbox17
+                   
+                    $("#button17").trigger("click"); // Programmatically trigger button17 click event
+                    removetable(event);
+                   
+
+                    event.preventDefault(); // Prevent default behavior if necessary
+
+                     // Remove table from UI
+                } else {
+                    alert("Error: Table name could not be extracted.");
+                }
+            } else {
+                alert("Please select a single table to delete.");
+            }
+        });
+
+
+        function removetable(event) {
+            var selectedTableDiv = $(".table-selected"); // Find the selected table div
+
+            if (selectedTableDiv.length === 1) {
+                var tableName = selectedTableDiv.find("h5").text().replace("Table: ", "").trim(); // Extract table name
+
+                /*alert("Deleting table: " + tableName);*/
+
+                // ✅ Fetch tablesData from localStorage
+                let tablesData = JSON.parse(localStorage.getItem("tablesData")) || [];
+
+                // ✅ Filter out the deleted table
+                tablesData = tablesData.filter(table => table.tableName !== tableName);
+
+                selectedTableDiv.remove();
+                // ✅ Update localStorage
+                localStorage.setItem("tablesData", JSON.stringify(tablesData));
+               alert("Table '" + tableName + "' has been deleted from the design area .");
+                getfield();
+                // ✅ Remove from the design area
+
+               
+                
+                event.preventDefault();
+
+            } else {
+                alert("Please select a single table to delete.");
+            }
+
+        }
+
+        $("#button8").click(function (event) {
+            removetable(event);
+        });
+
+
+
+        $('#button5').on('click', function () {
+            $('#joinModal').modal('show');
+        });
+
+        $('#button6').on('click', function () {
+            $('#joinModal').modal('show');
+        });
+
+        $('#button7').on('click', function () {
+            $('#joinModal').modal('show');
+        });
+
+
+        $('#applyJoin').on('click', function () {
+            const selectedJoin = $('input[name="joinOption"]:checked').val();
+            if (selectedJoin) {
+                $('#joinTextBox').val(selectedJoin); // Store in hidden input
+                console.log("Selected JOIN:", selectedJoin);
+            } else {
+                alert("Please select a JOIN type.");
+            }
+        });
+
+
+
+
+        $(".btn1").click(function (event) {
+           
+            if (selectedTables.length === 2) {
+                let line = new LeaderLine(
+                    selectedTables[0],
+                    selectedTables[1],
+                    {
+                        color: "gold",
+                        path: "fluid",
+                        startPlug: "disc",
+                        endPlug: "disc"
+                    }
+                   
+                );
+                $('.draggable-table').draggable({
+                    drag: function () {
+                        line.position(); // update line while dragging
+                    },
+                    stop: function () {
+                        line.position(); // ensure line is correctly positioned after dragging
+                    }
+                });
+                lines.push(line);
+                selectedTables = [];
+               
+                // Reset selection
+                $(".draggable-table").removeClass("table-selected");
+                $("#btn1").prop("disabled", true);
+  
+            }
+            event.preventDefault();
+           
+        });
+
+
+
+        $(".btn2").click(function (event) {
+
+            if (selectedTables.length === 2) {
+                let line = new LeaderLine(
+                    selectedTables[0],
+                    selectedTables[1],
+                    {
+                        color: "gold",
+                        path: "fluid",
+                        startPlug: "disc",
+                        endPlug: "arrow2"
+                    }
+
+                );
+                $('.draggable-table').draggable({
+                    drag: function () {
+                        line.position(); // update line while dragging
+                    },
+                    stop: function () {
+                        line.position(); // ensure line is correctly positioned after dragging
+                    }
+                });
+                lines.push(line);
+                selectedTables = [];
+
+                // Reset selection
+                $(".draggable-table").removeClass("table-selected");
+                $("#btn2").prop("disabled", true);
+
+            }
+            event.preventDefault();
+
+        });
+
+
+
+        $(".btn3").click(function (event) {
+
+            if (selectedTables.length === 2) {
+                let line = new LeaderLine(
+                    selectedTables[0],
+                    selectedTables[1],
+                    {
+                        color: "gold",
+                        path: "fluid",
+                        startPlug: "arrow2",
+                        endPlug: "arrow2"
+                    }
+
+                );
+                $('.draggable-table').draggable({
+                    drag: function () {
+                        line.position(); // update line while dragging
+                    },
+                    stop: function () {
+                        line.position(); // ensure line is correctly positioned after dragging
+                    }
+                });
+                lines.push(line);
+                selectedTables = [];
+
+                // Reset selection
+                $(".draggable-table").removeClass("table-selected");
+                $("#btn3").prop("disabled", true);
+
+            }
+            event.preventDefault();
+
+        });
+
+
+
+     
+
+        function saveImage(format) {
+            var mimeType = (format === "jpg") ? "image/jpeg" : "image/png"; // Set format
+
+            html2canvas($("#designArea")[0], { useCORS: true }).then(function (canvas) {
+                var imageData = canvas.toDataURL(mimeType);
+
+                var $link = $("<a>")
+                    .attr("href", imageData)
+                    .attr("download", "design." + format)
+                    .appendTo("body");
+
+                $link[0].click();  // Simulate click to trigger download
+                $link.remove();    // Cleanup
+            }).catch(function (error) {
+                console.error("Error capturing image:", error);
+                alert("Failed to capture image. Please check console.");
+            });
+        }
+
+
+
+
+
+
+
+
+
+        // Event Listeners
+        $("#Png").click(function (event) {
+          
+            saveImage("png");
+            event.preventDefault();
+            
+        });
+
+        $("#Jpg").click(function (event) {
+            saveImage("jpeg");
+            event.preventDefault();
+        });
+
+
+
+       
+        $(document).on("click", ".btnDelete", function (e) {
+            if (!confirm("Are you sure you want to delete this row?")) {
+                e.preventDefault();
+            }
+        });
+
+       
+       
+      
+    });
+
+
+
+  
+
+</script>
+
+           
+            <hr />
+            <footer>
+                <p>&copy; <%: DateTime.Now.Year %> - My ASP.NET Application</p>
+            </footer>
+        </div>
+    </form>
+    <asp:PlaceHolder runat="server">
+        <%: Scripts.Render("~/Scripts/bootstrap.js") %>
+    </asp:PlaceHolder>
+</body>
+  
+</html>
